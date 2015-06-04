@@ -17,12 +17,16 @@ Basic usage examples.
 Posts = new Mongo.Collection('posts');
 
 //Attach behaviour with the default options
-Posts.trackable();
+CollectionBehaviours.attach(Posts, 'trackable');
 
 //Attach behaviour with custom options
-Posts.trackable({ include: [ 'name' ]});
+CollectionBehaviours.attach(Posts, 'trackable', {
+    include: ['name']
+});
 
-Posts.trackable({ exclude: [ 'updatedAt' ]});
+CollectionBehaviours.attach(Posts, 'trackable', {
+    exclude: ['search']
+});
 ```
 
 ### Options

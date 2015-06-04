@@ -13,16 +13,16 @@ Package.onUse(function(api) {
     'mongo',
     'underscore',
     'meteorblackbelt:underscore-deep@0.0.3',
-    'zimme:collection-behaviours'
+    'zimme:collection-behaviours@0.1.1'
   ], [ 'client', 'server' ]);
 
-  api.addFiles('collection-tracker.js');
+  api.imply('zimme:collection-behaviours');
 
-  api.export('Tracker');
+  api.addFiles('collection-tracker.js');
 });
 
 Package.onTest(function(api) {
   api.use('tinytest');
-  api.use('collection-tracker');
+  api.use('meteorblackbelt:collection-tracker');
   api.addFiles('collection-tracker-tests.js');
 });

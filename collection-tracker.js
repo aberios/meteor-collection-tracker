@@ -1,4 +1,4 @@
-CollectionBehaviours.defineBehaviour('trackable', function(getTransform, args) {
+CollectionBehaviours.define('trackable', function(getTransform, args) {
   this.before.update(function (userId, oldDoc, fieldNames, modifier, options) {
     var options = args[0];
 
