@@ -1,10 +1,8 @@
-CollectionBehaviours.define('trackable', function(getTransform, args) {
+CollectionBehaviours.define('trackable', function(behaviourOptions) {
   this.before.update(function (userId, oldDoc, fieldNames, modifier, options) {
-    var options = args[0];
-
-    var fieldName = options && options.fieldName || 'tracked';
-    var includedFields = options && options.include ? options.include : fieldNames;
-    var excludedFields = options && options.exclude ? options.exclude : [];
+    var fieldName = behaviourOptions && behaviourOptions.fieldName || 'tracked';
+    var includedFields = behaviourOptions && behaviourOptions.include ? behaviourOptions.include : fieldNames;
+    var excludedFields = behaviourOptions && behaviourOptions.exclude ? behaviourOptions.exclude : [];
 
     var trackedFields = _.difference( _.intersection(includedFields, fieldNames), excludedFields );
 
