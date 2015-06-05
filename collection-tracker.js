@@ -1,4 +1,6 @@
-CollectionBehaviours.define('trackable', function(behaviourOptions) {
+CollectionBehaviours.define('trackable', function(options) {
+  behaviourOptions = _.defaults(options, this.options);
+
   this.collection.before.update(function (userId, oldDoc, fieldNames, modifier, options) {
     var fieldName = behaviourOptions && behaviourOptions.fieldName || 'tracked';
     var includedFields = behaviourOptions && behaviourOptions.include ? behaviourOptions.include : fieldNames;
