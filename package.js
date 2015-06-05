@@ -13,8 +13,8 @@ Package.onUse(function(api) {
     'mongo',
     'underscore',
     'meteorblackbelt:underscore-deep@0.0.3',
-    'zimme:collection-behaviours@0.1.1'
-  ], [ 'client', 'server' ]);
+    'zimme:collection-behaviours@1.0.4'
+  ]);
 
   api.imply('zimme:collection-behaviours');
 
