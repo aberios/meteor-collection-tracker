@@ -38,7 +38,10 @@ CollectionBehaviours.define('trackable', function(behaviourOptions) {
 
 
       if (!_.isEmpty(changes)) {
-        var track = { changedAt: new Date() };
+        var track = { 
+          changedAt: new Date(),
+          changedBy: userId
+        };
 
         _.extend(track, changes)
 
