@@ -17,12 +17,12 @@ Basic usage examples.
 Posts = new Mongo.Collection('posts');
 
 //Attach behaviour with the default options
-Posts.attach('trackable');
+Posts.attachBehaviour('trackable');
 // or
 CollectionBehaviours.attach(Posts, 'trackable');
 
 //Attach behaviour with custom options
-Posts.attach('trackable', {
+Posts.attachBehaviour('trackable', {
   include: ['name']
 });
 // or
