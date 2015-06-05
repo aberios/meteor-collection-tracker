@@ -17,9 +17,15 @@ Basic usage examples.
 Posts = new Mongo.Collection('posts');
 
 //Attach behaviour with the default options
+Posts.attach('trackable');
+// or
 CollectionBehaviours.attach(Posts, 'trackable');
 
 //Attach behaviour with custom options
+Posts.attach('trackable', {
+  include: ['name']
+});
+// or
 CollectionBehaviours.attach(Posts, 'trackable', {
     include: ['name']
 });
@@ -37,3 +43,9 @@ The following options can be used:
 
 * `exclude`: array of fields to exclude (default is none)
 
+### Global options
+
+```js
+CollectionBehaviours.configure('trackable', {
+  include: ['createdAt']
+});
