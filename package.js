@@ -20,9 +20,3 @@ Package.onUse(function(api) {
 
   api.addFiles('collection-tracker.js');
 });
-
-Package.onTest(function(api) {
-  api.use('tinytest');
-  api.use('meteorblackbelt:collection-tracker');
-  api.addFiles('collection-tracker-tests.js');
-});
