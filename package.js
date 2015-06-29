@@ -18,5 +18,5 @@ Package.onUse(function(api) {
 
   api.imply('zimme:collection-behaviours');
 
-  api.addFiles('collection-tracker.js');
+  api.addFiles(['underscore-pick-deep.js', 'collection-tracker.js']);
 });

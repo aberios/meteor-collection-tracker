@@ -12,26 +12,33 @@ CollectionBehaviours.define('trackable', function(behaviourOptions) {
 
       if (! _.isEmpty(trackedFields) ) {
         var changes = _.reduce( Object.keys(modifier), function(memo, modifierKey) {
-          var modifierChanges = _.compact(_.map(modifier[modifierKey], function(v, k) {
+          var currentModifier = modifier[modifierKey];
+
+          var modifierChanges = _.reduce(Object.keys(currentModifier), function(memo, k) {
             var keys = k.split('.');
+            var val = currentModifier[k];
 
             if (_.contains(trackedFields, keys[0])) {
               oldValue = _.reduce(keys, function(memo, field){
                 return memo[field];
               }, oldDoc);
 
-              if(!_.isEqual(oldValue, v) && !(isFalsey(oldValue) && isFalsey(v)) ) {
+              if(!_.isEqual(oldValue, val) && !(isFalsey(oldValue) && isFalsey(val)) ) {
                 change = {};
 
                 change[k] = {
                   old: oldValue,
-                  new: v
+                  new: modifierKey === '$unset' ? null : val
                 }
 
-                return _.deepFromFlat(change);
+                return _.extend(memo, _.deepFromFlat(change));
+              } else {
+                return memo;
               }
+            } else {
+              return memo;
             }
-          }));
+          }, {});
 
           if (!_.isEmpty(modifierChanges)) {
             memo[modifierKey.slice(1)] = modifierChanges;
