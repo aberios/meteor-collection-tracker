@@ -23,6 +23,7 @@ CollectionBehaviours.attach(Posts, 'trackable');
 
 //Attach behaviour with custom options
 Posts.attachBehaviour('trackable', {
+  fieldName: 'postChanges',
   include: ['name']
 });
 // or
@@ -35,6 +36,23 @@ CollectionBehaviours.attach(Posts, 'trackable', {
 });
 ```
 
+### Multiple trackers
+
+More than one tracker can be defined on the same collection by passing
+an array of options as follows
+
+```
+Posts.attachBehaviour('trackable', [
+  {
+    include: ['name']
+  },
+  {
+    fieldName: 'commentChanges',
+    include: ['comments']
+  }
+]);
+```
+
 ### Options
 
 The following options can be used:
@@ -42,6 +60,8 @@ The following options can be used:
 * `include`: array of fields to include (default is all)
 
 * `exclude`: array of fields to exclude (default is none)
+
+* `fieldName`: name of field that changes are tracked under (default is 'changes')
 
 ### Global options
 

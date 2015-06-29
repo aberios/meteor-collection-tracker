@@ -1,60 +1,63 @@
-CollectionBehaviours.define('trackable', function(options) {
-  behaviourOptions = _.defaults(options, this.options);
+CollectionBehaviours.define('trackable', function(behaviourOptions) {
+  this.collection.before.update(_.bind(function (userId, oldDoc, fieldNames, modifier, options) {
+    var behaviourOptionArray = _.isArray(behaviourOptions) ? behaviourOptions : new Array(behaviourOptions);
+    _.each(behaviourOptionArray, _.bind(function(behaviourOptions) {
+      behaviourOptions = _.defaults(behaviourOptions, this.options);
 
-  this.collection.before.update(function (userId, oldDoc, fieldNames, modifier, options) {
-    var fieldName = behaviourOptions && behaviourOptions.fieldName || 'changes';
-    var includedFields = behaviourOptions && behaviourOptions.include ? behaviourOptions.include : fieldNames;
-    var excludedFields = behaviourOptions && behaviourOptions.exclude ? behaviourOptions.exclude : [];
+      var fieldName = behaviourOptions && behaviourOptions.fieldName || 'changes';
+      var includedFields = behaviourOptions && behaviourOptions.include ? behaviourOptions.include : fieldNames;
+      var excludedFields = behaviourOptions && behaviourOptions.exclude ? behaviourOptions.exclude : [];
 
-    var trackedFields = _.difference( _.intersection(includedFields, fieldNames), excludedFields );
+      var trackedFields = _.difference( _.intersection(includedFields, fieldNames), excludedFields );
 
-    if (! _.isEmpty(trackedFields) ) {
-      var changes = _.reduce( Object.keys(modifier), function(memo, modifierKey) {
-        var modifierChanges = _.compact(_.map(modifier[modifierKey], function(v, k) {
-          var keys = k.split('.');
+      if (! _.isEmpty(trackedFields) ) {
+        var changes = _.reduce( Object.keys(modifier), function(memo, modifierKey) {
+          var modifierChanges = _.compact(_.map(modifier[modifierKey], function(v, k) {
+            var keys = k.split('.');
 
-          if (_.contains(trackedFields, keys[0])) {
-            oldValue = _.reduce(keys, function(memo, field){
-              return memo[field];
-            }, oldDoc);
+            if (_.contains(trackedFields, keys[0])) {
+              oldValue = _.reduce(keys, function(memo, field){
+                return memo[field];
+              }, oldDoc);
 
-            if(!_.isEqual(oldValue, v) && !(isFalsey(oldValue) && isFalsey(v)) ) {
-              change = {};
+              if(!_.isEqual(oldValue, v) && !(isFalsey(oldValue) && isFalsey(v)) ) {
+                change = {};
 
-              change[k] = {
-                old: oldValue,
-                new: v
+                change[k] = {
+                  old: oldValue,
+                  new: v
+                }
+
+                return _.deepFromFlat(change);
               }
-
-              return _.deepFromFlat(change);
             }
+          }));
+
+          if (!_.isEmpty(modifierChanges)) {
+            memo[modifierKey.slice(1)] = modifierChanges;
           }
-        }));
 
-        if (!_.isEmpty(modifierChanges)) {
-          memo[modifierKey.slice(1)] = modifierChanges;
+          return memo;
+        }, {});
+
+
+        if (!_.isEmpty(changes)) {
+          var track = { 
+            changedAt: new Date(),
+            changedBy: userId
+          };
+
+          _.extend(track, changes)
+
+          if(!modifier.$push) {
+            modifier.$push = {};
+          }
+
+          modifier.$push[ fieldName ] = track;
         }
-
-        return memo;
-      }, {});
-
-
-      if (!_.isEmpty(changes)) {
-        var track = { 
-          changedAt: new Date(),
-          changedBy: userId
-        };
-
-        _.extend(track, changes)
-
-        if(!modifier.$push) {
-          modifier.$push = {};
-        }
-
-        modifier.$push[ fieldName ] = track;
       }
-    }
-  });
+    }, this));
+  }, this));
 });
 
 var isFalsey = function(val) {
