@@ -18,7 +18,7 @@ CollectionBehaviours.define('trackable', function(options) {
               return memo[field];
             }, oldDoc);
 
-            if(!_.isEqual(oldValue, v) && !isFalsey(oldValue) && !isFalsey(v) ) {
+            if(!_.isEqual(oldValue, v) && !(isFalsey(oldValue) && isFalsey(v)) ) {
               change = {};
 
               change[k] = {
