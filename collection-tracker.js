@@ -23,8 +23,8 @@ CollectionBehaviours.define('trackable', function(behaviourOptions) {
           var currentModifier = modifier[modifierKey];
 
           var modifierChanges = _.reduce(Object.keys(currentModifier), function(memo, k) {
-            var preKey = k.scan(/^(?:(.*\.\d)+\.)?(.*)$/g)[0][0] || '';
-            var postKey = k.scan(/^(?:(.*\.\d)+\.)?(.*)$/g)[0][1];
+            var preKey = (k.scan(/^(.*\.[\d\$])?\.?(.*)$/g)[0][0] || '');
+            var postKey = (k.scan(/^(.*\.[\d\$])?\.?(.*)$/g)[0][1] || '');
 
             var key = k.replace(/\b\d+\b/g, '$');
             var val = currentModifier[k];
