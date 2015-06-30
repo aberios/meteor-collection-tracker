@@ -1,6 +1,6 @@
 Package.describe({
   name: 'meteorblackbelt:collection-tracker',
-  version: '0.0.8',
+  version: '0.0.9',
   summary: 'Extends Mongo.Collection with tracking of changes to documents',
   git: 'https://github.com/meteorblackbelt/meteor-collection-tracker.git',
   documentation: 'README.md'
@@ -18,5 +18,5 @@ Package.onUse(function(api) {
 
   api.imply('zimme:collection-behaviours');
 
-  api.addFiles(['underscore-pick-deep.js', 'collection-tracker.js']);
+  api.addFiles(['string.js', 'underscore-pick-deep.js', 'collection-tracker.js']);
 });

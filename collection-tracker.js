@@ -5,62 +5,64 @@ CollectionBehaviours.define('trackable', function(behaviourOptions) {
       behaviourOptions = _.defaults(behaviourOptions, this.options);
 
       var fieldName = behaviourOptions && behaviourOptions.fieldName || 'changes';
+      fieldNames = _.union(modifier.$set && Object.keys(modifier.$set), modifier.$unset && Object.keys(modifier.$unset));
+      fieldNames = _.map(_.compact(fieldNames), function(k){ return k.replace(/\b\d+\b/g, '$') });
+
       var includedFields = behaviourOptions && behaviourOptions.include ? behaviourOptions.include : fieldNames;
       var excludedFields = behaviourOptions && behaviourOptions.exclude ? behaviourOptions.exclude : [];
 
-      var trackedFields = _.difference( _.intersection(includedFields, fieldNames), excludedFields );
+      var trackedFields = _.select(fieldNames, function(field){
+        return _.any(includedFields, function(f){ return field.match(new RegExp('^' + f.replace(/\$/g, '\\$'))) });
+      });
+      trackedFields = _.reject(trackedFields, function(field){
+        return _.any(excludedFields, function(f){ return field.match(new RegExp('^' + f)) });
+      });
 
       if (! _.isEmpty(trackedFields) ) {
         var changes = _.reduce( Object.keys(modifier), function(memo, modifierKey) {
           var currentModifier = modifier[modifierKey];
 
           var modifierChanges = _.reduce(Object.keys(currentModifier), function(memo, k) {
-            var keys = k.split('.');
+            var preKey = k.scan(/^(?:(.*\.\d)+\.)?(.*)$/g)[0][0] || '';
+            var postKey = k.scan(/^(?:(.*\.\d)+\.)?(.*)$/g)[0][1];
+
+            var key = k.replace(/\b\d+\b/g, '$');
             var val = currentModifier[k];
 
-            if (_.contains(trackedFields, keys[0])) {
-              oldValue = _.reduce(keys, function(memo, field){
+            if (_.contains(trackedFields, key)) {
+              // deepPick
+              oldValue = _.reduce(k.split('.'), function(memo, field){
                 return memo[field];
               }, oldDoc);
 
               if(!_.isEqual(oldValue, val) && !(isFalsey(oldValue) && isFalsey(val)) ) {
                 change = {};
+                change[preKey] = {};
+                change[preKey][modifierKey.slice(1)] = {};
 
-                change[k] = {
+                change[preKey][modifierKey.slice(1)][postKey] = {
                   old: oldValue,
                   new: modifierKey === '$unset' ? null : val
                 }
 
-                return _.extend(memo, _.deepFromFlat(change));
-              } else {
-                return memo;
+                change[preKey].changedAt = new Date();
+                change[preKey].changedBy = userId;
+
+                _.deepExtend(memo, change);
               }
-            } else {
-              return memo;
             }
+            return memo;
           }, {});
 
-          if (!_.isEmpty(modifierChanges)) {
-            memo[modifierKey.slice(1)] = modifierChanges;
-          }
-
-          return memo;
+          return _.extend(memo, modifierChanges);
         }, {});
 
-
         if (!_.isEmpty(changes)) {
-          var track = { 
-            changedAt: new Date(),
-            changedBy: userId
-          };
+          if(!modifier.$push) modifier.$push = {};
 
-          _.extend(track, changes)
-
-          if(!modifier.$push) {
-            modifier.$push = {};
-          }
-
-          modifier.$push[ fieldName ] = track;
+          _.each(changes, function(v, k) {
+            modifier.$push[ _.compact([ k, fieldName ]).join('.') ] = v;
+          });
         }
       }
     }, this));
