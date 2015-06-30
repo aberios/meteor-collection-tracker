@@ -1,6 +1,6 @@
 Package.describe({
   name: 'meteorblackbelt:collection-tracker',
-  version: '0.0.10',
+  version: '0.0.11',
   summary: 'Extends Mongo.Collection with tracking of changes to documents',
   git: 'https://github.com/meteorblackbelt/meteor-collection-tracker.git',
   documentation: 'README.md'
