@@ -57,7 +57,7 @@ CollectionBehaviours.define('trackable', function(behaviourOptions) {
             return memo;
           }, {});
 
-          return _.extend(memo, modifierChanges);
+          return _.deepExtend(memo, modifierChanges);
         }, {});
 
         if (!_.isEmpty(changes)) {
