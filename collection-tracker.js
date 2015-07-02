@@ -32,7 +32,7 @@ CollectionBehaviours.define('trackable', function(behaviourOptions) {
             if (_.contains(trackedFields, key)) {
               // deepPick
               oldValue = _.reduce(k.split('.'), function(memo, field){
-                return memo[field];
+                return memo && memo[field];
               }, oldDoc);
 
               if(!_.isEqual(oldValue, val) && !(isFalsey(oldValue) && isFalsey(val)) ) {
